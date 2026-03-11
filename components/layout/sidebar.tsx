@@ -1,184 +1,156 @@
-"use client";
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, BarChart3, Truck, LogOut, MapPin, Users, Settings } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import type { UserRole } from "@/types/domain";
-import { useEffect, useState } from "react";
+interface NavItem { href: string; icon: string; label: string; badge?: number }
+
+const DISPATCHER_NAV: NavItem[] = [
+  { href: '/dashboard',  icon: '⊞', label: 'Dashboard' },
+  { href: '/tracking',   icon: '◉', label: 'Live Tracking' },
+  { href: '/analytics',  icon: '↗', label: 'Analytics' },
+  { href: '/crews',      icon: '◈', label: 'Crew Management' },
+];
+
+const MANAGER_NAV: NavItem[] = [
+  { href: '/dashboard',  icon: '⊞', label: 'Dashboard' },
+  { href: '/tracking',   icon: '◉', label: 'Live Tracking' },
+  { href: '/analytics',  icon: '↗', label: 'Analytics' },
+  { href: '/crews',      icon: '◈', label: 'Crew Management' },
+];
+
+const DRIVER_NAV: NavItem[] = [
+  { href: '/driver/jobs', icon: '⊞', label: 'My Jobs' },
+];
 
 interface SidebarProps {
-  userRole: UserRole;
-  userEmail?: string;
-  className?: string;
+  role?: string;
+  name?: string;
 }
 
-export function Sidebar({ userRole, userEmail, className }: SidebarProps) {
+export default function Sidebar({ role = 'dispatcher', name = 'User' }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [userName, setUserName] = useState("");
 
-  useEffect(() => {
-    if (userEmail) {
-      const name = userEmail.split("@")[0];
-      setUserName(
-        name.charAt(0).toUpperCase() +
-          name.slice(1).replace(/[._-]/g, " ")
-      );
-    }
-  }, [userEmail]);
+  const navMap = { dispatcher: DISPATCHER_NAV, manager: MANAGER_NAV, driver: DRIVER_NAV };
+  const nav = navMap[role as keyof typeof navMap] || DISPATCHER_NAV;
 
-  async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
-
-  const navItems = [
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      roles: ["dispatcher", "manager", "driver"],
-    },
-    {
-      label: "Live Tracking",
-      href: "/tracking",
-      icon: MapPin,
-      roles: ["dispatcher", "manager"],
-    },
-    {
-      label: "Analytics",
-      href: "/analytics",
-      icon: BarChart3,
-      roles: ["dispatcher", "manager"],
-    },
-    {
-      label: "Crew Management",
-      href: "/crews",
-      icon: Users,
-      roles: ["dispatcher", "manager"],
-    },
-  ];
-
-  const bottomNavItems = [
-    {
-      label: "Settings",
-      href: "/settings",
-      icon: Users,
-      roles: ["dispatcher", "manager", "driver"],
-    },
-  ];
-
-  const visibleItems = navItems.filter((item) =>
-    item.roles.includes(userRole)
-  );
-
-  const getRoleDisplay = (role: UserRole) => {
-    switch (role) {
-      case "dispatcher":
-        return "Senior Dispatcher";
-      case "manager":
-        return "Administrator";
-      case "driver":
-        return "Driver";
-      default:
-        return role;
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const roleInitial = name[0].toUpperCase();
+  const roleLabel = role === 'dispatcher' ? 'Senior Dispatcher' : role === 'manager' ? 'Administrator' : 'Driver';
 
   return (
-    <aside className={`w-52 bg-[#1a1f2e] text-gray-100 flex-col hidden md:flex ${className || ""}`}>
-      <div className="p-6 border-b border-gray-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Truck size={24} className="text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-white">Move Ready</h2>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider">
-              Operations Center
-            </p>
-          </div>
+    <aside style={{
+      width: 220, minWidth: 220,
+      background: 'var(--bg-surface)',
+      borderRight: '1px solid var(--border)',
+      display: 'flex', flexDirection: 'column',
+      position: 'relative', overflow: 'hidden',
+      transition: 'background 0.25s',
+    }}>
+      {/* Top accent line */}
+      <div style={{
+        position:'absolute', top:0, left:0, right:0, height:1,
+        background:'linear-gradient(90deg, transparent, var(--accent), transparent)',
+        opacity: 0.6,
+      }} />
+
+      {/* Brand */}
+      <div style={{ padding:'20px 20px 16px', borderBottom:'1px solid var(--border)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:2 }}>
+          <div style={{
+            width:32, height:32, background:'var(--accent)', borderRadius:8,
+            display:'flex', alignItems:'center', justifyContent:'center', fontSize:14,
+            boxShadow:'0 0 16px var(--accent-glow)',
+          }}>🚛</div>
+          <span style={{ fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700, letterSpacing:'-0.02em', color:'var(--text-primary)' }}>
+            Move Ready
+          </span>
+        </div>
+        <div style={{ fontSize:9, fontFamily:'DM Mono,monospace', color:'var(--text-secondary)', letterSpacing:'0.12em', textTransform:'uppercase', marginLeft:42 }}>
+          Operations Center
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-1 flex flex-col">
-        <div className="flex-1 space-y-1">
-          {visibleItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
-                  isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                    : "text-gray-400 hover:bg-gray-800/50 hover:text-white"
-                }`}
-              >
-                <Icon size={18} />
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
+      {/* Nav */}
+      <nav style={{ flex:1, padding:'12px 10px', display:'flex', flexDirection:'column', gap:2 }}>
+        <div style={{ fontSize:9, fontFamily:'DM Mono,monospace', color:'var(--text-muted)', letterSpacing:'0.15em', textTransform:'uppercase', padding:'8px 10px 4px' }}>
+          {role === 'driver' ? 'Assignments' : 'Operations'}
         </div>
 
-        <div className="border-t border-gray-800 pt-3 space-y-1">
-          {bottomNavItems.filter((item) => item.roles.includes(userRole)).map((item) => {
-            const Icon = item.icon === Users ? Settings : item.icon;
-            const isActive = pathname === item.href;
+        {nav.map(item => {
+          const active = pathname === item.href;
+          return (
+            <Link key={item.href} href={item.href} style={{ textDecoration:'none' }}>
+              <div style={{
+                display:'flex', alignItems:'center', gap:10,
+                padding:'9px 12px', borderRadius:8, cursor:'pointer',
+                fontSize:13, fontWeight:500,
+                color: active ? 'var(--accent-bright)' : 'var(--text-secondary)',
+                background: active ? 'var(--accent-subtle)' : 'transparent',
+                border: `1px solid ${active ? 'rgba(59,130,246,0.2)' : 'transparent'}`,
+                position:'relative', transition:'all 0.15s',
+              }}>
+                {active && (
+                  <div style={{
+                    position:'absolute', left:-1, top:'25%', bottom:'25%',
+                    width:2, background:'var(--accent-bright)', borderRadius:'0 2px 2px 0',
+                  }} />
+                )}
+                <span style={{ width:15, textAlign:'center', opacity:0.8 }}>{item.icon}</span>
+                {item.label}
+                {item.badge ? (
+                  <span style={{
+                    marginLeft:'auto', background:'var(--red)', color:'white',
+                    fontSize:9, fontFamily:'DM Mono,monospace', padding:'1px 5px', borderRadius:99,
+                  }}>{item.badge}</span>
+                ) : null}
+              </div>
+            </Link>
+          );
+        })}
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
-                  isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                    : "text-gray-400 hover:bg-gray-800/50 hover:text-white"
-                }`}
-              >
-                <Icon size={18} />
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
+        <div style={{ fontSize:9, fontFamily:'DM Mono,monospace', color:'var(--text-muted)', letterSpacing:'0.15em', textTransform:'uppercase', padding:'12px 10px 4px', marginTop:4 }}>
+          System
         </div>
+        <Link href="/settings" style={{ textDecoration:'none' }}>
+          <div style={{
+            display:'flex', alignItems:'center', gap:10,
+            padding:'9px 12px', borderRadius:8, cursor:'pointer',
+            fontSize:13, fontWeight:500,
+            color: pathname === '/settings' ? 'var(--accent-bright)' : 'var(--text-secondary)',
+            background: pathname === '/settings' ? 'var(--accent-subtle)' : 'transparent',
+            border: `1px solid ${pathname === '/settings' ? 'rgba(59,130,246,0.2)' : 'transparent'}`,
+            position:'relative', transition:'all 0.15s',
+          }}>
+            {pathname === '/settings' && (
+              <div style={{ position:'absolute', left:-1, top:'25%', bottom:'25%', width:2, background:'var(--accent-bright)', borderRadius:'0 2px 2px 0' }} />
+            )}
+            <span style={{ width:15, textAlign:'center', opacity:0.8 }}>⚙</span>
+            Settings
+          </div>
+        </Link>
       </nav>
 
-      <div className="p-4 border-t border-gray-800">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
-            {userName ? getInitials(userName) : "U"}
+      {/* Footer user card */}
+      <div style={{ padding:'12px 10px', borderTop:'1px solid var(--border)' }}>
+        <div style={{
+          display:'flex', alignItems:'center', gap:10,
+          padding:'10px 12px', borderRadius:8,
+          background:'var(--bg-elevated)', border:'1px solid var(--border)',
+        }}>
+          <div style={{
+            width:30, height:30, borderRadius:8,
+            background:'linear-gradient(135deg, var(--accent), #7c3aed)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontFamily:'Syne,sans-serif', fontSize:12, fontWeight:700, color:'white',
+          }}>{roleInitial}</div>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'var(--text-primary)' }}>{name}</div>
+            <div style={{ fontSize:10, color:'var(--text-secondary)', fontFamily:'DM Mono,monospace' }}>{roleLabel}</div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">
-              {userName || "User"}
-            </p>
-            <p className="text-xs text-gray-400">{getRoleDisplay(userRole)}</p>
-          </div>
+          <div style={{
+            width:7, height:7, borderRadius:'50%',
+            background:'var(--green)', boxShadow:'0 0 6px var(--green)',
+          }} className="animate-pulse-dot" />
         </div>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:bg-gray-800/50 hover:text-white transition-colors w-full text-sm"
-        >
-          <LogOut size={16} />
-          <span>Sign Out</span>
-        </button>
       </div>
     </aside>
   );

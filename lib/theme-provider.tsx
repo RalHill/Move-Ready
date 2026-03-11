@@ -1,52 +1,26 @@
-"use client";
+'use client';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+type Theme = 'dark' | 'light';
+interface ThemeCtx { theme: Theme; toggle: () => void; }
 
-type Theme = "light" | "dark";
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType>({
-  theme: "light",
-  toggleTheme: () => {},
-});
+const Ctx = createContext<ThemeCtx>({ theme: 'dark', toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored && (stored === "light" || stored === "dark")) {
-      setTheme(stored);
-    }
+    const saved = localStorage.getItem('mr-theme') as Theme | null;
+    if (saved) setTheme(saved);
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-    
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme, mounted]);
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('mr-theme', theme);
+  }, [theme]);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+  return <Ctx.Provider value={{ theme, toggle }}>{children}</Ctx.Provider>;
 }
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => useContext(Ctx);

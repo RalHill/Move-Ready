@@ -1,5 +1,6 @@
 import { getProfile, createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import AppShell from "@/components/layout/AppShell";
 import { CrewsList } from "@/components/crews/crews-list";
 
 export default async function CrewsPage() {
@@ -17,5 +18,9 @@ export default async function CrewsPage() {
   const { data: crews } = await supabase.from("crews").select("*").order("name");
   const { data: jobs } = await supabase.from("jobs").select("*");
 
-  return <CrewsList initialCrews={crews || []} initialJobs={jobs || []} />;
+  return (
+    <AppShell>
+      <CrewsList initialCrews={crews || []} initialJobs={jobs || []} />
+    </AppShell>
+  );
 }

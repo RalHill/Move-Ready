@@ -227,90 +227,268 @@ export function DispatchBoard({
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg flex items-center gap-2">
+        <div
+          style={{
+            background: "var(--red-dim)",
+            border: "1px solid rgba(239,68,68,0.25)",
+            color: "var(--red)",
+            padding: "12px 16px",
+            borderRadius: 8,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 14,
+            fontWeight: 500,
+          }}
+        >
           <AlertTriangle size={16} />
-          <p className="text-sm font-medium">{error}</p>
+          <p>{error}</p>
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-4">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <h2
+            style={{
+              fontSize: 18,
+              fontWeight: 600,
+              fontFamily: "Syne, sans-serif",
+              color: "var(--text-primary)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
             {showAllJobs ? "All Jobs" : "Unassigned Jobs"}
-            <span className="text-sm font-normal text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                background: "var(--bg-elevated)",
+                padding: "2px 8px",
+                borderRadius: 99,
+                fontFamily: "DM Mono, monospace",
+              }}
+            >
               {displayedJobs.length}
             </span>
           </h2>
         </div>
         <button
           onClick={() => setShowAllJobs(!showAllJobs)}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+          style={{
+            fontSize: 11,
+            color: "var(--text-accent)",
+            cursor: "pointer",
+            fontFamily: "DM Mono, monospace",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            padding: "4px 8px",
+            borderRadius: 6,
+            border: "1px solid rgba(59,130,246,0.2)",
+            background: "transparent",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--accent-subtle)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
         >
           {showAllJobs ? "Show Unassigned Only" : "View All"} →
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: 12,
+          marginBottom: 32,
+        }}
+      >
         {displayedJobs.length === 0 ? (
-          <div className="col-span-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400">
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              background: "var(--bg-card)",
+              borderRadius: 12,
+              border: "1px solid var(--border)",
+              padding: 48,
+              textAlign: "center",
+            }}
+          >
+            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
               {showAllJobs ? "No jobs available" : "No unassigned jobs"}
             </p>
           </div>
         ) : (
           displayedJobs.map((job) => {
             const priority = getJobPriority(job.scheduled_time);
+            const priorityColor =
+              priority === "urgent"
+                ? { color: "var(--red)", bg: "var(--red-dim)", border: "rgba(239,68,68,0.25)" }
+                : priority === "pending"
+                  ? { color: "var(--accent-bright)", bg: "var(--blue-dim)", border: "rgba(59,130,246,0.25)" }
+                  : { color: "var(--purple)", bg: "var(--purple-dim)", border: "rgba(124,58,237,0.25)" };
+
             return (
               <div
                 key={job.id}
                 draggable={userRole === "dispatcher"}
                 onDragStart={(e) => handleDragStart(e, job)}
                 onDragEnd={handleDragEnd}
-                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:border-blue-400 hover:shadow-md transition-all cursor-move group"
+                style={{
+                  background: "var(--bg-card)",
+                  borderRadius: 12,
+                  border: "1px solid var(--border)",
+                  padding: 16,
+                  position: "relative",
+                  overflow: "hidden",
+                  cursor: "move",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "var(--border-bright)";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "var(--border)";
+                  e.currentTarget.style.transform = "";
+                }}
               >
-                <div className="flex items-start justify-between mb-3">
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: 3,
+                    background: priorityColor.color,
+                    borderRadius: "12px 0 0 12px",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    marginBottom: 12,
+                  }}
+                >
                   <span
-                    className={`px-2.5 py-1 rounded text-[10px] font-semibold uppercase tracking-wide ${getPriorityBadge(
-                      priority
-                    )}`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      fontSize: 9,
+                      fontFamily: "DM Mono, monospace",
+                      fontWeight: 500,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      padding: "2px 7px",
+                      borderRadius: 4,
+                      color: priorityColor.color,
+                      background: priorityColor.bg,
+                      border: `1px solid ${priorityColor.border}`,
+                    }}
                   >
-                    {priority}
+                    ⚠ {priority.toUpperCase()}
                   </span>
-                  <button className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    style={{
+                      color: "var(--text-muted)",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 4,
+                      transition: "color 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "var(--text-secondary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "var(--text-muted)";
+                    }}
+                  >
                     <MoreVertical size={16} />
                   </button>
                 </div>
 
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                <h3
+                  style={{
+                    fontFamily: "Syne, sans-serif",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    marginBottom: 10,
+                    color: "var(--text-primary)",
+                  }}
+                >
                   {job.customer_name}
                 </h3>
 
-                <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-start gap-2">
-                    <MapPin size={14} className="mt-0.5 flex-shrink-0" />
-                    <span className="text-xs leading-relaxed">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                    <MapPin size={14} style={{ marginTop: 2, flexShrink: 0, color: "var(--text-secondary)" }} />
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "DM Mono, monospace", lineHeight: 1.4 }}>
                       {job.address}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} className="flex-shrink-0" />
-                    <span className="text-xs">
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Calendar size={14} style={{ flexShrink: 0, color: "var(--text-secondary)" }} />
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "DM Mono, monospace" }}>
                       {format(new Date(job.scheduled_time), "MMM dd")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock size={14} className="flex-shrink-0" />
-                    <span className="text-xs">
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Clock size={14} style={{ flexShrink: 0, color: "var(--text-secondary)" }} />
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "DM Mono, monospace" }}>
                       {format(new Date(job.scheduled_time), "HH:mm")}
                     </span>
                   </div>
                 </div>
 
                 {job.risk_flag && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                  <div
+                    style={{
+                      marginTop: 12,
+                      paddingTop: 12,
+                      borderTop: "1px solid var(--border)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        fontSize: 10,
+                        fontFamily: "DM Mono, monospace",
+                        fontWeight: 500,
+                        color: "var(--amber)",
+                        background: "var(--amber-dim)",
+                        padding: "4px 8px",
+                        borderRadius: 4,
+                        border: "1px solid rgba(245,158,11,0.25)",
+                      }}
+                    >
                       <AlertTriangle size={12} />
                       At Risk: Running late
                     </span>
@@ -322,61 +500,125 @@ export function DispatchBoard({
         )}
       </div>
 
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Crews</h2>
+      <h2
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+          fontFamily: "Syne, sans-serif",
+          color: "var(--text-primary)",
+          marginBottom: 16,
+        }}
+      >
+        Crews
+      </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: 12,
+        }}
+      >
         {crews.map((crew) => {
           const crewJobs = jobs.filter((job) => job.crew_id === crew.id);
           const hasJobs = crewJobs.length > 0;
+          const bg =
+            crew.status === "available"
+              ? "var(--green-dim)"
+              : crew.status === "assigned"
+                ? "var(--blue-dim)"
+                : "var(--bg-elevated)";
 
           return (
             <div
               key={crew.id}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, crew.id)}
-              className={`bg-white dark:bg-gray-800 rounded-lg border-2 dark:border-gray-700 p-4 transition-all ${
-                draggedJob
-                  ? "border-blue-400 border-dashed shadow-lg"
-                  : "border-gray-200"
-              }`}
+              style={{
+                background: "var(--bg-card)",
+                borderRadius: 12,
+                border: draggedJob
+                  ? "2px dashed var(--accent-bright)"
+                  : "1px solid var(--border)",
+                padding: 16,
+                transition: "all 0.2s",
+                cursor: draggedJob ? "drop" : "default",
+              }}
+              onDragLeave={(e) => {
+                if (draggedJob) {
+                  e.currentTarget.style.borderColor = "var(--border)";
+                  e.currentTarget.style.background = "var(--bg-card)";
+                }
+              }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 16,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      crew.status === "available"
-                        ? "bg-green-100"
-                        : crew.status === "assigned"
-                        ? "bg-blue-100"
-                        : "bg-gray-100"
-                    }`}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      background: bg,
+                      border: `1px solid ${crew.status === "available" ? "rgba(16,185,129,0.2)" : crew.status === "assigned" ? "rgba(59,130,246,0.2)" : "var(--border)"}`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 16,
+                    }}
                   >
                     <Truck
                       size={20}
-                      className={
-                        crew.status === "available"
-                          ? "text-green-600"
-                          : crew.status === "assigned"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
+                      style={{
+                        color:
+                          crew.status === "available"
+                            ? "var(--green)"
+                            : crew.status === "assigned"
+                              ? "var(--accent-bright)"
+                              : "var(--text-muted)",
+                      }}
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+                    <h3
+                      style={{
+                        fontFamily: "Syne, sans-serif",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                      }}
+                    >
                       {crew.name}
                     </h3>
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
                       <span
-                        className={`w-2 h-2 rounded-full ${
-                          crew.status === "available"
-                            ? "bg-green-500"
-                            : crew.status === "assigned"
-                            ? "bg-blue-500"
-                            : "bg-gray-400"
-                        }`}
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background:
+                            crew.status === "available"
+                              ? "var(--green)"
+                              : crew.status === "assigned"
+                                ? "var(--accent-bright)"
+                                : "var(--text-muted)",
+                        }}
                       ></span>
-                      <span className="text-xs text-gray-600 uppercase">
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontFamily: "DM Mono, monospace",
+                          textTransform: "uppercase",
+                          color: "var(--text-secondary)",
+                          fontWeight: 500,
+                        }}
+                      >
                         {crew.status}
                       </span>
                     </div>
@@ -385,32 +627,86 @@ export function DispatchBoard({
               </div>
 
               {hasJobs ? (
-                <div className="space-y-3">
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {crewJobs.map((job) => (
                     <div
                       key={job.id}
-                      className="p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      style={{
+                        padding: 12,
+                        background: "var(--bg-elevated)",
+                        borderRadius: 8,
+                        border: "1px solid var(--border)",
+                      }}
                     >
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      <p
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "var(--text-primary)",
+                          marginBottom: 4,
+                          fontFamily: "Syne, sans-serif",
+                        }}
+                      >
                         {job.customer_name}
                       </p>
-                      <p className="text-xs text-gray-600 mb-2">
+                      <p
+                        style={{
+                          fontSize: 11,
+                          color: "var(--text-secondary)",
+                          marginBottom: 8,
+                          fontFamily: "DM Mono, monospace",
+                        }}
+                      >
                         {job.address}
                       </p>
                       {job.risk_flag && (
-                        <div className="flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200 mb-2">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            fontSize: 10,
+                            fontFamily: "DM Mono, monospace",
+                            color: "var(--amber)",
+                            background: "var(--amber-dim)",
+                            padding: "4px 8px",
+                            borderRadius: 4,
+                            border: "1px solid rgba(245,158,11,0.25)",
+                            marginBottom: 8,
+                          }}
+                        >
                           <AlertTriangle size={12} />
                           <span>At Risk: Running late</span>
                         </div>
                       )}
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium uppercase ${
-                          job.status === "assigned"
-                            ? "bg-blue-100 text-blue-700"
-                            : job.status === "en_route"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-green-100 text-green-700"
-                        }`}
+                        style={{
+                          display: "inline-block",
+                          padding: "2px 8px",
+                          borderRadius: 4,
+                          fontSize: 9,
+                          fontFamily: "DM Mono, monospace",
+                          fontWeight: 500,
+                          textTransform: "uppercase",
+                          color:
+                            job.status === "assigned"
+                              ? "var(--accent-bright)"
+                              : job.status === "en_route"
+                                ? "var(--purple)"
+                                : "var(--green)",
+                          background:
+                            job.status === "assigned"
+                              ? "var(--blue-dim)"
+                              : job.status === "en_route"
+                                ? "var(--purple-dim)"
+                                : "var(--green-dim)",
+                          border:
+                            job.status === "assigned"
+                              ? "1px solid rgba(59,130,246,0.25)"
+                              : job.status === "en_route"
+                                ? "1px solid rgba(124,58,237,0.25)"
+                                : "1px solid rgba(16,185,129,0.25)",
+                        }}
                       >
                         {job.status === "en_route" ? "In Progress" : job.status}
                       </span>
@@ -418,14 +714,40 @@ export function DispatchBoard({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-xs text-gray-400 italic mb-3">
+                <div style={{ textAlign: "center", padding: "32px 0" }}>
+                  <p
+                    style={{
+                      fontSize: 11,
+                      fontStyle: "italic",
+                      marginBottom: 12,
+                      color: "var(--text-muted)",
+                    }}
+                  >
                     {draggedJob ? "Drop job here" : "No assigned jobs"}
                   </p>
                   {draggedJob && (
                     <button
                       onClick={() => handleAssignClick(draggedJob.id, crew.id)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                      style={{
+                        padding: "8px 16px",
+                        background: "var(--accent)",
+                        color: "white",
+                        fontSize: 12,
+                        fontWeight: 500,
+                        borderRadius: 8,
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                        boxShadow: "0 0 16px var(--accent-glow)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "var(--accent-bright)";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "var(--accent)";
+                        e.currentTarget.style.transform = "";
+                      }}
                     >
                       Assign
                     </button>

@@ -58,106 +58,221 @@ export function CrewsList({ initialCrews, initialJobs }: CrewsListProps) {
 
   return (
     <>
-      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div style={{ marginBottom: 24, display: "flex", flexDirection: "column", gap: 16, justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+          <h1
+            style={{
+              fontSize: "28px",
+              fontWeight: 700,
+              fontFamily: "Syne, sans-serif",
+              color: "var(--text-primary)",
+              letterSpacing: "-0.01em",
+            }}
+          >
             Crew Management
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p
+            style={{
+              fontSize: "14px",
+              color: "var(--text-secondary)",
+              marginTop: "8px",
+              fontFamily: "DM Sans, sans-serif",
+            }}
+          >
             Manage crew details and assignments
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-sm font-medium rounded-lg transition-all"
+          style={{
+            padding: "8px 16px",
+            background: "var(--accent)",
+            color: "white",
+            fontSize: 12,
+            fontWeight: 500,
+            borderRadius: 8,
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.15s",
+            boxShadow: "0 0 16px var(--accent-glow)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--accent-bright)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "var(--accent)";
+            e.currentTarget.style.transform = "";
+          }}
         >
           Add Crew
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 12 }}>
         {crews?.map((crew) => {
           const crewJobs = jobs?.filter((j) => j.crew_id === crew.id) || [];
           const utilization = crew.status === "assigned" ? 75 : 0;
+          const bg =
+            crew.status === "available"
+              ? "var(--green-dim)"
+              : crew.status === "assigned"
+                ? "var(--blue-dim)"
+                : "var(--bg-elevated)";
+          const color =
+            crew.status === "available"
+              ? "var(--green)"
+              : crew.status === "assigned"
+                ? "var(--accent-bright)"
+                : "var(--text-muted)";
 
           return (
             <div
               key={crew.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow"
+              style={{
+                background: "var(--bg-card)",
+                borderRadius: 12,
+                border: "1px solid var(--border)",
+                padding: 20,
+                transition: "all 0.15s",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--border-bright)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.transform = "";
+              }}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div
-                    className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      crew.status === "available"
-                        ? "bg-green-100 dark:bg-green-900/30"
-                        : crew.status === "assigned"
-                        ? "bg-blue-100 dark:bg-blue-900/30"
-                        : "bg-gray-100 dark:bg-gray-700"
-                    }`}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 10,
+                      background: bg,
+                      border: `1px solid ${crew.status === "available" ? "rgba(16,185,129,0.2)" : crew.status === "assigned" ? "rgba(59,130,246,0.2)" : "var(--border)"}`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
-                    <Truck
-                      size={24}
-                      className={
-                        crew.status === "available"
-                          ? "text-green-600"
-                          : crew.status === "assigned"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
-                    />
+                    <Truck size={24} style={{ color }} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                    <h3
+                      style={{
+                        fontFamily: "Syne, sans-serif",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                      }}
+                    >
                       {crew.name}
                     </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: "var(--text-secondary)",
+                        marginTop: 4,
+                        fontFamily: "DM Mono, monospace",
+                        textTransform: "uppercase",
+                      }}
+                    >
                       {crew.status === "available"
                         ? "Available"
                         : crew.status === "assigned"
-                        ? "On Assignment"
-                        : "Offline"}
+                          ? "On Assignment"
+                          : "Offline"}
                     </p>
                   </div>
                 </div>
                 <span
-                  className={`w-3 h-3 rounded-full ${
-                    crew.status === "available"
-                      ? "bg-green-500"
-                      : crew.status === "assigned"
-                      ? "bg-blue-500"
-                      : "bg-gray-400"
-                  }`}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: color,
+                    boxShadow: `0 0 6px ${color}`,
+                  }}
                 ></span>
               </div>
 
-              <div className="space-y-3 mb-4">
-                <div className="flex items-start gap-2 text-sm">
-                  <MapPin size={14} className="mt-0.5 text-gray-400" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <MapPin size={14} style={{ marginTop: 2, color: "var(--text-secondary)", flexShrink: 0 }} />
                   <div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: "var(--text-secondary)",
+                        fontFamily: "DM Mono, monospace",
+                        textTransform: "uppercase",
+                      }}
+                    >
                       Current Location
                     </p>
-                    <p className="text-xs font-mono text-gray-900 dark:text-gray-100">
+                    <p
+                      style={{
+                        fontSize: 11,
+                        fontFamily: "DM Mono, monospace",
+                        color: "var(--text-primary)",
+                        marginTop: 4,
+                      }}
+                    >
                       {crew.current_lat.toFixed(4)}, {crew.current_lng.toFixed(4)}
                     </p>
                   </div>
                 </div>
 
                 {crewJobs.length > 0 && (
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <div style={{ paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: "var(--text-secondary)",
+                        marginBottom: 8,
+                        fontFamily: "DM Mono, monospace",
+                        textTransform: "uppercase",
+                      }}
+                    >
                       Active Jobs
                     </p>
                     {crewJobs.map((job) => (
                       <div
                         key={job.id}
-                        className="text-xs bg-gray-50 dark:bg-gray-900 rounded px-2 py-1.5 mb-1"
+                        style={{
+                          fontSize: 11,
+                          background: "var(--bg-elevated)",
+                          borderRadius: 6,
+                          padding: "8px 10px",
+                          marginBottom: 6,
+                          border: "1px solid var(--border)",
+                        }}
                       >
-                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                        <p
+                          style={{
+                            fontWeight: 600,
+                            color: "var(--text-primary)",
+                            marginBottom: 2,
+                            fontFamily: "Syne, sans-serif",
+                          }}
+                        >
                           {job.customer_name}
                         </p>
-                        <p className="text-gray-600 dark:text-gray-400 truncate">
+                        <p
+                          style={{
+                            color: "var(--text-secondary)",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            fontFamily: "DM Mono, monospace",
+                            fontSize: 10,
+                          }}
+                        >
                           {job.address}
                         </p>
                       </div>
@@ -167,14 +282,39 @@ export function CrewsList({ initialCrews, initialJobs }: CrewsListProps) {
               </div>
 
               <div>
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
-                  <span className="uppercase font-medium">Utilization</span>
-                  <span className="font-semibold">{utilization}%</span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    fontSize: 11,
+                    color: "var(--text-secondary)",
+                    marginBottom: 8,
+                    fontFamily: "DM Mono, monospace",
+                    fontWeight: 500,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  <span>Utilization</span>
+                  <span style={{ color: "var(--accent-bright)" }}>{utilization}%</span>
                 </div>
-                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  style={{
+                    height: 3,
+                    background: "var(--border)",
+                    borderRadius: 99,
+                    overflow: "hidden",
+                  }}
+                >
                   <div
-                    className="h-full bg-blue-600 rounded-full transition-all"
-                    style={{ width: `${utilization}%` }}
+                    style={{
+                      height: "100%",
+                      background: "var(--accent-bright)",
+                      borderRadius: 99,
+                      transition: "width 0.4s ease",
+                      width: `${utilization}%`,
+                    }}
                   ></div>
                 </div>
               </div>

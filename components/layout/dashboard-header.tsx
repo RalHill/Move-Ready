@@ -11,46 +11,112 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ className, onMenuClick }: DashboardHeaderProps) {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggle } = useTheme();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   return (
-    <header className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4 ${className || ""}`}>
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onMenuClick}
-          className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
+    <header
+      style={{
+        background: "var(--bg-surface)",
+        borderBottom: "1px solid var(--border)",
+        padding: "16px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        transition: "background 0.25s, border-color 0.2s",
+      }}
+      className={className}
+    >
+      <button
+        onClick={onMenuClick}
+        className="md:hidden p-2 rounded-lg transition-colors"
+        style={{
+          color: "var(--text-secondary)",
+          background: "transparent",
+          border: "1px solid var(--border)",
+          cursor: "pointer",
+        }}
+        aria-label="Open menu"
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--bg-elevated)";
+          e.currentTarget.style.color = "var(--text-primary)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--text-secondary)";
+        }}
+      >
+        <Menu size={24} />
+      </button>
 
-        <div className="flex-1 md:flex-initial" />
+      <div style={{ flex: 1 }} />
 
-        <div className="flex items-center gap-3 relative">
-          <div className="relative">
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="relative p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              aria-label="View notifications"
-            >
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            {notificationsOpen && (
-              <NotificationsDropdown onClose={() => setNotificationsOpen(false)} />
-            )}
-          </div>
-
+      <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
+        <div style={{ position: "relative" }}>
           <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            aria-label="Toggle dark mode"
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+            style={{
+              position: "relative",
+              padding: 8,
+              color: "var(--text-secondary)",
+              background: "transparent",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            aria-label="View notifications"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--bg-elevated)";
+              e.currentTarget.style.color = "var(--text-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "var(--text-secondary)";
+            }}
           >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+            <Bell size={20} />
+            <span
+              style={{
+                position: "absolute",
+                top: 6,
+                right: 6,
+                width: 8,
+                height: 8,
+                background: "var(--red)",
+                borderRadius: "50%",
+              }}
+            ></span>
           </button>
+
+          {notificationsOpen && (
+            <NotificationsDropdown onClose={() => setNotificationsOpen(false)} />
+          )}
         </div>
+
+        <button
+          onClick={toggle}
+          style={{
+            padding: 8,
+            color: "var(--text-secondary)",
+            background: "transparent",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            cursor: "pointer",
+            transition: "all 0.15s",
+          }}
+          aria-label="Toggle dark mode"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--bg-elevated)";
+            e.currentTarget.style.color = "var(--text-primary)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "var(--text-secondary)";
+          }}
+        >
+          {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+        </button>
       </div>
     </header>
   );
