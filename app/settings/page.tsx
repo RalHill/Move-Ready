@@ -97,9 +97,64 @@ export default function SettingsPage() {
     <AppShell>
       <Topbar title="Settings" sub="Manage your account and platform preferences" />
       <div style={{ flex:1, overflow:'hidden', display:'flex' }}>
+        <style>{`
+          @media (max-width: 767px) {
+            .settings-nav {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 4px;
+              padding: 8px;
+              border-bottom: 1px solid var(--border);
+              background: var(--bg-surface);
+              width: 100%;
+              min-height: auto;
+              border-right: none;
+              overflow-y: visible;
+              order: -1;
+            }
+            .settings-nav > div {
+              padding: 8px !important;
+              margin-bottom: 0 !important;
+              gap: 6px !important;
+            }
+            .settings-nav > div span:first-child {
+              width: 14px;
+              font-size: 12px;
+            }
+            .settings-nav > div > div {
+              display: none;
+            }
+            .settings-content {
+              width: 100%;
+              padding: 16px 12px !important;
+            }
+            .settings-content > div:first-child {
+              font-size: 14px;
+            }
+          }
+          @media (min-width: 768px) {
+            .settings-nav {
+              width: 220px;
+              min-width: 220px;
+              border-right: 1px solid var(--border);
+              border-bottom: none;
+              background: var(--bg-surface);
+              padding: 16px 10px;
+              overflow-y: auto;
+              transition: background 0.25s;
+            }
+            .settings-nav > div {
+              padding: 10px 12px;
+              margin-bottom: 2px;
+            }
+            .settings-content {
+              padding: 28px 32px !important;
+            }
+          }
+        `}</style>
 
         {/* Settings nav */}
-        <div style={{ width:220, minWidth:220, borderRight:'1px solid var(--border)', background:'var(--bg-surface)', padding:'16px 10px', overflowY:'auto', transition:'background 0.25s' }}>
+        <div className="settings-nav" style={{ transition:'background 0.25s' }}>
           {SECTIONS.map(s => (
             <div key={s.id} onClick={() => setActive(s.id)} style={{
               display:'flex', alignItems:'center', gap:10, padding:'10px 12px',
@@ -119,7 +174,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div style={{ flex:1, overflowY:'auto', padding:'28px 32px' }} className="animate-fade-in" key={active}>
+        <div className="settings-content animate-fade-in" style={{ flex:1, overflowY:'auto' }} key={active}>
 
           {/* ── PROFILE ── */}
           {active === 'profile' && (

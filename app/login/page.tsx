@@ -13,16 +13,34 @@ export default function LoginPage() {
       justifyContent: 'center',
       background: theme === 'dark' ? 'linear-gradient(135deg, #060810 0%, #0f1419 100%)' : 'linear-gradient(135deg, #eef1f8 0%, #f8fafb 100%)',
       transition: 'background 0.25s',
+      padding: '16px',
     }}>
-      <div style={{
+      <style>{`
+        @media (max-width: 480px) {
+          .login-container {
+            max-width: 100%;
+          }
+          .login-logo {
+            font-size: 24px;
+          }
+          .login-card {
+            padding: 24px !important;
+          }
+          .login-card-title {
+            font-size: 14px;
+          }
+          .login-card-sub {
+            font-size: 11px;
+          }
+        }
+      `}</style>
+      <div className="login-container" style={{
         width: '100%',
         maxWidth: '420px',
-        padding: '24px',
       }}>
         {/* Logo & Branding */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{
-            fontSize: '32px',
+          <div className="login-logo" style={{
             fontWeight: '700',
             fontFamily: 'Syne, sans-serif',
             marginBottom: '8px',
@@ -32,7 +50,7 @@ export default function LoginPage() {
             justifyContent: 'center',
             gap: '10px',
           }}>
-            <span style={{ fontSize: '28px' }}>📦</span>
+            <span>📦</span>
             Move Ready Plus
           </div>
           <p style={{
@@ -46,7 +64,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card Container */}
-        <div style={{
+        <div className="login-card" style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: '12px',
@@ -57,8 +75,7 @@ export default function LoginPage() {
             : '0 8px 32px rgba(0,0,0,0.08)',
           transition: 'all 0.25s',
         }}>
-          <div style={{
-            fontSize: '16px',
+          <div className="login-card-title" style={{
             fontWeight: '600',
             fontFamily: 'Syne, sans-serif',
             marginBottom: '8px',
@@ -66,8 +83,7 @@ export default function LoginPage() {
           }}>
             Sign In
           </div>
-          <p style={{
-            fontSize: '12px',
+          <p className="login-card-sub" style={{
             color: 'var(--text-secondary)',
             fontFamily: 'DM Mono, monospace',
             marginBottom: '24px',

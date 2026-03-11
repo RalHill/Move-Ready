@@ -22,8 +22,20 @@ export default function DispatcherDashboard() {
   return (
     <AppShell>
       <Topbar title="Dispatch Board" sub="Assign and manage crew operations in real-time" />
-      <div style={{ flex:1, overflowY:'auto', padding:'24px 28px' }} className="animate-fade-in">
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
+      <div style={{ flex:1, overflowY:'auto', padding:'16px' }} className="animate-fade-in">
+        <style>{`
+          @media (min-width: 768px) {
+            .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+            .jobs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .crews-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+          }
+          @media (max-width: 767px) {
+            .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .jobs-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+            .crews-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          }
+        `}</style>
+        <div className="kpi-grid" style={{ marginBottom:20 }}>
           <KpiCard label="Active Jobs" value={5} sub="2 in-progress · 3 pending" delta="↑ 12%" deltaDir="up" accent="green" />
           <KpiCard label="Completion Rate" value="94.2%" sub="7-day rolling average" delta="↑ 2.4%" deltaDir="up" accent="blue" />
           <KpiCard label="At-Risk Jobs" value={1} sub="Requires immediate action" delta="⚠ 1" deltaDir="warn" accent="amber" />
@@ -31,7 +43,7 @@ export default function DispatcherDashboard() {
         </div>
         <div style={{ marginBottom:20 }}>
           <SectionHeader title="Unassigned Jobs" badge={`${urgent.length} URGENT`} action={<ViewAll />} />
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+          <div className="jobs-grid">
             {urgent.map(j => (
               <div key={j.id} style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, padding:16, cursor:'pointer', position:'relative', overflow:'hidden', transition:'all 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='var(--border-bright)'; e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 8px 24px var(--shadow)'; }}
@@ -54,7 +66,7 @@ export default function DispatcherDashboard() {
         </div>
         <div>
           <SectionHeader title="Crew Status" action={<ViewAll label="Manage →" />} />
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+          <div className="crews-grid">
             {CREWS.map(c => (
               <div key={c.id} style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, padding:16, cursor:'pointer', transition:'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='var(--border-bright)'; e.currentTarget.style.boxShadow='0 4px 16px var(--shadow)'; }}

@@ -40,10 +40,21 @@ export default function TrackingPage() {
   return (
     <AppShell>
       <Topbar title="Live Tracking" sub="Real-time crew locations and active routes" />
-      <div style={{ flex:1, display:'grid', gridTemplateColumns:'1fr 300px', gap:16, padding:16, overflow:'hidden' }} className="animate-fade-in">
+      <div style={{ flex:1, padding:16, overflow:'hidden' }} className="animate-fade-in">
+        <style>{`
+          @media (min-width: 768px) {
+            .tracking-layout { display: grid; grid-template-columns: 1fr 300px; gap: 16px; height: 100%; }
+          }
+          @media (max-width: 767px) {
+            .tracking-layout { display: flex; flex-direction: column; gap: 8px; height: 100%; }
+            .tracking-map { max-height: 40vh; border-radius: 8px; }
+            .tracking-panel { max-height: 60vh; }
+          }
+        `}</style>
+        <div className="tracking-layout">
 
         {/* Map */}
-        <div style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden', position:'relative' }}>
+        <div className="tracking-map" style={{ background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden', position:'relative' }}>
           <MapComponent crews={CREWS} zoom={zoom} mapMode={mapMode} />
 
           {/* Map overlay */}
@@ -74,7 +85,7 @@ export default function TrackingPage() {
         </div>
 
         {/* Side panel */}
-        <div style={{ display:'flex', flexDirection:'column', gap:10, overflowY:'auto' }}>
+        <div className="tracking-panel" style={{ display:'flex', flexDirection:'column', gap:10, overflowY:'auto' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <div style={{ fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:700 }}>Active Crews</div>
             <span style={{ background:'var(--green-dim)', border:'1px solid rgba(16,185,129,0.2)', color:'var(--green)', fontSize:10, fontFamily:'DM Mono,monospace', padding:'3px 8px', borderRadius:99 }}>
@@ -128,6 +139,7 @@ export default function TrackingPage() {
           <div style={{ textAlign:'center', fontSize:10, fontFamily:'DM Mono,monospace', color:'var(--text-muted)', padding:8 }}>
             Updated 02:51:11 · <span style={{ color:'var(--accent-bright)', cursor:'pointer' }} onClick={handleForceRefresh}>↻ Force Refresh</span>
           </div>
+        </div>
         </div>
       </div>
     </AppShell>

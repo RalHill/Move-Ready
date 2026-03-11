@@ -29,8 +29,19 @@ export default function CrewPage() {
         sub="Manage crew details and assignments"
         actions={<PrimaryBtn onClick={handleAddCrew}>+ Add Crew</PrimaryBtn>}
       />
-      <div style={{ flex:1, overflowY:'auto', padding:'24px 28px' }} className="animate-fade-in">
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
+      <div style={{ flex:1, overflowY:'auto', padding:'16px' }} className="animate-fade-in">
+        <style>{`
+          @media (min-width: 1024px) {
+            .crew-grid { grid-template-columns: repeat(3, 1fr); }
+          }
+          @media (max-width: 1023px) and (min-width: 768px) {
+            .crew-grid { grid-template-columns: repeat(2, 1fr); }
+          }
+          @media (max-width: 767px) {
+            .crew-grid { grid-template-columns: 1fr; }
+          }
+        `}</style>
+        <div className="crew-grid" style={{ display:'grid', gap:12 }}>
           {CREWS.map(c => {
             const dotColor = c.status==='available'?'var(--green)':c.status==='assigned'?'var(--accent-bright)':'#475569';
             const iconBg   = c.status==='available'?'var(--green-dim)':c.status==='assigned'?'var(--blue-dim)':'var(--bg-elevated)';

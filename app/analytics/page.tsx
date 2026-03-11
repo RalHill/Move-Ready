@@ -27,17 +27,27 @@ export default function AnalyticsPage() {
           </div>
         }
       />
-      <div style={{ flex:1, overflowY:'auto', padding:'24px 28px' }} className="animate-fade-in">
+      <div style={{ flex:1, overflowY:'auto', padding:'16px' }} className="animate-fade-in">
+        <style>{`
+          @media (min-width: 768px) {
+            .analytics-kpi { grid-template-columns: repeat(4, 1fr); }
+            .analytics-layout { display: grid; grid-template-columns: 1fr 280px; gap: 16px; }
+          }
+          @media (max-width: 767px) {
+            .analytics-kpi { grid-template-columns: repeat(2, 1fr); }
+            .analytics-layout { display: flex; flex-direction: column; gap: 16px; }
+          }
+        `}</style>
 
         {/* KPIs */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
+        <div className="analytics-kpi" style={{ display:'grid', gap:8, marginBottom:20 }}>
           <KpiCard label="Total Jobs" value={5} sub="vs 4 last week" delta="↑ 12%" deltaDir="up" accent="blue" />
           <KpiCard label="Completion Rate" value="94.2%" sub="7-day rolling" delta="↑ 2.4%" deltaDir="up" accent="green" />
           <KpiCard label="At-Risk Jobs" value={atRisk.length} sub="Overdue · Needs action" delta="⚠ 1" deltaDir="warn" accent="amber" />
           <KpiCard label="Crew Utilization" value="25.0%" sub="Below 40% target" delta="↓ 3%" deltaDir="down" accent="red" />
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 280px', gap:16 }}>
+        <div className="analytics-layout">
           <div>
             {/* Bar chart */}
             <Card style={{ padding:20, marginBottom:14 }}>
