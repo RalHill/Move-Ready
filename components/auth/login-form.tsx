@@ -24,7 +24,18 @@ export function LoginForm() {
       });
 
       if (signInError) {
-        setError(signInError.message);
+        let userFriendlyError = signInError.message;
+        
+        // Provide more helpful error messages
+        if (signInError.message.includes("Invalid login credentials")) {
+          userFriendlyError = "Invalid email or password. Please check and try again.";
+        } else if (signInError.message.includes("fetch") || signInError.message.includes("Network")) {
+          userFriendlyError = "Network error. Check your connection and try again.";
+        } else if (signInError.message.includes("not confirmed")) {
+          userFriendlyError = "Please confirm your email address before signing in.";
+        }
+        
+        setError(userFriendlyError);
         setLoading(false);
         return;
       }
@@ -33,8 +44,9 @@ export function LoginForm() {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch {
-      setError("An unexpected error occurred");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage.includes("fetch") ? "Failed to connect to server. Please check your connection." : errorMessage);
       setLoading(false);
     }
   }
@@ -93,10 +105,16 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-6 text-sm text-gray-600 text-center">
-        <p>Demo accounts:</p>
-        <p className="font-mono text-xs mt-1">
-          dispatcher@test.com / manager@test.com / driver@test.com
+      <div className="mt-6 text-sm text-gray-600 text-center space-y-2">
+        <p className="font-semibold">Demo Credentials (Create in Supabase First):</p>
+        <div className="bg-gray-50 p-3 rounded border border-gray-200 text-xs font-mono">
+          <p>dispatcher@test.com</p>
+          <p>manager@test.com</p>
+          <p>driver@test.com</p>
+          <p className="mt-2 text-gray-500">Password: TestPass123!</p>
+        </div>
+        <p className="text-xs text-gray-500 pt-2">
+          👉 <a href="/SUPABASE_SETUP.md" className="underline hover:text-gray-700">Setup Guide</a> to create test users
         </p>
       </div>
     </div>
